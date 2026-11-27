@@ -2,7 +2,6 @@ name: Leaf API CI
 
 # TODO 2a - Use pull requests into main and pushes to main.
 on:
-  workflow_dispatch:
   pull_request:
     branches: [main]
   push:
@@ -26,7 +25,7 @@ jobs:
         run: uv sync --locked
       - name: Run API tests
         # TODO 2b - Replace the placeholder with the API test command.
-        run: exit 1
+        run: uv run --locked pytest -q tests/test_api.py
 
   docker-build:
     needs: tests
