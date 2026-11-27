@@ -34,14 +34,14 @@ Answer: ready check si la page est prete a etre afficher. La version est utile p
 
 ### Checkpoint 3 · Evidence
 
-- Local branch:
-- Local commit SHA:
-- Local API test count:
-- Actions run source (`main`, `PULL REQUEST` or `UNAVAILABLE`):
-- Actions run URL:
-- `tests` job status:
-- `docker-build` job status:
-- Container smoke result or first failed CI step:
+- Local branch: main
+- Local commit SHA: dbd78aeb4239b0bc130cbeea0c28f63479b8c6ee
+- Local API test count: 7 passed
+- Actions run source (`main`, `PULL REQUEST` or `UNAVAILABLE`): 
+- Actions run URL: https://github.com/PierreGuerout/AI53_MLOPS_TP/actions/runs/46057561960
+- `tests` job status: succeeded
+- `docker-build` job status: succeeded 
+- Container smoke result or first failed CI step: UNAVAILABLE
 
 For the two job statuses, use `PASS`, `FAIL`, `PENDING`, `SKIPPED`, `CANCELLED` or `UNAVAILABLE`. Use `SKIPPED` when Actions shows that a job was skipped. Use `UNAVAILABLE` for missing CI evidence.
 
@@ -53,12 +53,12 @@ Answer:
 
 ### Checkpoint 4 · Evidence
 
-- Mode (`RENDER` or `LOCAL`):
-- Target URL:
+- Mode (`RENDER` or `LOCAL`): LOCAL
+- Target URL: http://127.0.0.1:8000
 - Tested commit SHA:
-- Expected model version from Checkpoint 1:
-- Observed model version from `/ready` (`UNAVAILABLE` if it returned none):
-- Smoke check result (`PASS` or `FAIL`):
+- Expected model version from Checkpoint 1: phase1-reference-v1
+- Observed model version from `/ready` (`UNAVAILABLE` if it returned none): phase1-reference-v1
+- Smoke check result (`PASS` or `FAIL`): PASS
 - First error, if any:
 - Earlier Render attempt, if switching to local (URL if available and reason for switching):
 
