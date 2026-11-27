@@ -74,8 +74,8 @@ Fill each row from its own `summary.json`. Use the file from the CURRENT report 
 
 | Batch | Reference mean (`reference_mean`) | Batch mean (`current_mean`) | Method | Score | Threshold | Result (`DRIFT` or `NO DRIFT`) |
 | --- | --- | --- | --- | --- | --- | --- |
-| `CURRENT` | | | | | | |
-| `SHIFTED` | | | | | | |
+| `CURRENT` | 0.4724440528104574 | 0.47574189751633994 | 0.8079631540901643 | | | NO DRIFT |
+| `SHIFTED` | 0.4724440528104574 | 0.16466240836601304 | 1.6911233892144742e-17 | | | DRIFT |
 
 - Final full test count:
 
