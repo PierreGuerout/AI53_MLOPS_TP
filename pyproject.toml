@@ -1,0 +1,28 @@
+[project]
+name = "ai53-leaf-serving"
+version = "0.1.0"
+description = "Serve and monitor the AI53 bean-leaf classifier"
+requires-python = ">=3.12,<3.13"
+dependencies = [
+    "fastapi>=0.115,<1",
+    "numpy>=1.26,<3",
+    "onnxruntime==1.23.2",
+    "pillow>=11,<13",
+    "pydantic>=2,<3",
+    "python-multipart>=0.0.22,<1",
+    "uvicorn>=0.34,<1",
+]
+
+[dependency-groups]
+dev = [
+    "httpx2>=2,<3",
+    "pytest>=8,<10",
+]
+monitoring = [
+    "evidently==0.7.23",
+    "pandas>=2.2,<3",
+]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["."]

@@ -1,0 +1,54 @@
+name: Leaf API CI
+
+# TODO 2a - Use pull requests into main and pushes to main.
+on:
+  workflow_dispatch:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  tests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          persist-credentials: false
+      - uses: astral-sh/setup-uv@v9.0.0
+        with:
+          version: "0.13.10"
+          python-version: "3.12"
+      - name: Install the locked environment
+        run: uv sync --locked
+      - name: Run API tests
+        # TODO 2b - Replace the placeholder with the API test command.
+        run: exit 1
+
+  docker-build:
+    needs: tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          persist-credentials: false
+      - uses: astral-sh/setup-uv@v9.0.0
+        with:
+          version: "0.13.10"
+          python-version: "3.12"
+      - name: Build the service image
+        run: docker build -t "ai53-leaf-api:sha-${GITHUB_SHA}" .
+      - name: Start the container
+        id: start
+        run: docker run -d --name leaf-api -p 127.0.0.1:8000:8000 "ai53-leaf-api:sha-${GITHUB_SHA}"
+      - name: Check the running container
+        run: uv run --locked python -m tools.smoke --url http://127.0.0.1:8000 --expected-version phase1-reference-v1
+      - name: Show logs if a check fails
+        if: ${{ failure() && steps.start.outcome == 'success' }}
+        run: docker logs leaf-api
+      - name: Stop the container
+        if: ${{ always() && steps.start.outcome == 'success' }}
+        run: docker rm -f leaf-api

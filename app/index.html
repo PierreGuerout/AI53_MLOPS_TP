@@ -1,0 +1,326 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Bean Leaf Classifier</title>
+  <style>
+    :root {
+      color-scheme: light;
+      font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+      color: #17304b;
+      background: #edf3f7;
+      --navy: #122940;
+      --ink-soft: #40576d;
+      --emerald: #00634d;
+      --border: #d1dde5;
+      --surface: #fff;
+      --mono: "Cascadia Code", "SFMono-Regular", Consolas, monospace;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; }
+    [hidden] { display: none !important; }
+    body { margin: 0; }
+    h1, h2, p { margin: 0; }
+    code, pre { font-family: var(--mono); }
+    button, input { font: inherit; }
+    :focus-visible { outline: 3px solid #007d62; outline-offset: 4px; }
+
+    .wrapper {
+      width: min(100% - 2.5rem, 64rem);
+      margin-inline: auto;
+    }
+    .intro {
+      background: var(--navy);
+      border-block-end: 4px solid #2baf8e;
+      color: #fff;
+    }
+    .intro .wrapper {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: .9rem 1.5rem;
+      padding-block: 1.75rem 2rem;
+    }
+    h1 { font-size: clamp(1.65rem, 4vw, 2.35rem); line-height: 1.15; }
+    .intro p { margin-block-start: .45rem; color: #ddebf2; line-height: 1.5; }
+    .docs {
+      border: 1px solid #8a9cac;
+      border-radius: .45rem;
+      padding: .55rem .8rem;
+      color: #fff;
+      font-weight: 600;
+      text-underline-offset: .2em;
+    }
+    .docs:hover { background: #25435d; }
+    .docs:focus-visible { outline-color: #77e4c5; }
+
+    main { padding-block: 1.5rem 2rem; }
+    .request-form {
+      display: flex;
+      gap: .9rem 1.2rem;
+      align-items: flex-end;
+      flex-wrap: wrap;
+      border: 1px solid var(--border);
+      border-radius: .8rem;
+      background: var(--surface);
+      padding: 1.05rem 1.2rem;
+    }
+    .file-field { flex: 1 1 17rem; min-width: 0; }
+    label { display: block; margin-block-end: .45rem; font-weight: 700; }
+    input[type="file"] {
+      display: block;
+      width: 100%;
+      min-width: 0;
+      color: var(--navy);
+    }
+    input::file-selector-button, .submit {
+      min-height: 2.65rem;
+      padding: .5rem .85rem;
+      border: 1px solid var(--border);
+      border-radius: .45rem;
+      font-weight: 650;
+      cursor: pointer;
+    }
+    input::file-selector-button {
+      margin-inline-end: .65rem;
+      background: #edf5f5;
+      color: var(--navy);
+    }
+    input::file-selector-button:hover { background: #e0efee; }
+    .submit { border-color: var(--emerald); background: var(--emerald); color: #fff; }
+    .submit:hover:not(:disabled) { background: #004d3c; }
+    .submit:disabled { border-color: #dce5e9; background: #e8eff2; color: #40576d; cursor: default; }
+
+    .status {
+      margin-block-start: 1rem;
+      border-radius: .4rem;
+      border-inline-start: 3px solid #2b997b;
+      padding: .5rem .75rem;
+      background: #e2f1ed;
+      color: #193b35;
+      line-height: 1.45;
+    }
+    .status[data-error] { border-color: #aa4231; background: #faebe7; color: #762a20; }
+    .exchange {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 1rem;
+      margin-block-start: 1rem;
+    }
+    .panel {
+      min-width: 0;
+      border: 1px solid var(--border);
+      border-radius: .8rem;
+      background: var(--surface);
+      overflow: hidden;
+    }
+    .panel-header {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      gap: .35rem .7rem;
+      min-height: 3.15rem;
+      border-block-end: 1px solid var(--border);
+      padding: .6rem 1rem;
+    }
+    h2 { font-size: 1rem; }
+    .meta {
+      border-radius: .3rem;
+      padding: .25rem .45rem;
+      background: #e3f2ee;
+      color: #0b5848;
+      font-size: .82rem;
+      font-weight: 650;
+      line-height: 1.2;
+    }
+    .panel-content { padding: .85rem; }
+    .preview, pre {
+      min-height: 14.5rem;
+      border-radius: .55rem;
+      margin: 0;
+    }
+    .preview {
+      display: grid;
+      place-items: center;
+      padding: .6rem;
+      border: 1px dashed #9eb2be;
+      background: #edf3f7;
+      color: var(--ink-soft);
+      text-align: center;
+    }
+    .preview img {
+      display: block;
+      max-width: 100%;
+      max-height: 20rem;
+      border-radius: .3rem;
+      object-fit: contain;
+    }
+    pre {
+      padding: .85rem;
+      background: var(--navy);
+      color: #d9f3e9;
+      font-size: .88rem;
+      line-height: 1.55;
+      white-space: pre-wrap;
+      overflow-wrap: anywhere;
+    }
+    pre[data-empty] { color: #cfdae3; }
+
+    @media (max-width: 43rem) {
+      .exchange { grid-template-columns: 1fr; }
+    }
+    @media (max-width: 29rem) {
+      .wrapper { width: calc(100% - 1.25rem); }
+      .request-form { padding: .8rem; }
+      .submit { width: 100%; }
+    }
+  </style>
+</head>
+<body>
+  <header class="intro">
+    <div class="wrapper">
+      <div>
+        <h1>Bean Leaf Classifier</h1>
+        <p>Send a leaf photo to the API and inspect its JSON response.</p>
+      </div>
+      <a class="docs" href="/docs">API docs</a>
+    </div>
+  </header>
+
+  <main class="wrapper">
+    <form class="request-form" action="/predict" method="post" enctype="multipart/form-data">
+      <div class="file-field">
+        <label for="file">Leaf photo (JPG or PNG)</label>
+        <input id="file" name="file" type="file" accept="image/jpeg,image/png,.jpg,.jpeg,.png" required>
+      </div>
+      <button type="submit" class="submit">Send prediction request</button>
+    </form>
+    <p class="status" role="status" aria-atomic="true">Choose a photo to get started.</p>
+
+    <div class="exchange">
+      <section class="panel" aria-labelledby="request-heading">
+        <div class="panel-header">
+          <h2 id="request-heading">Request</h2>
+          <code class="meta">POST /predict</code>
+        </div>
+        <div class="panel-content">
+          <div class="preview">
+            <p id="preview-message">Photo preview</p>
+            <img id="preview-image" alt="Selected leaf photo" hidden>
+          </div>
+        </div>
+      </section>
+
+      <section class="panel" aria-labelledby="response-heading">
+        <div class="panel-header">
+          <h2 id="response-heading">Response JSON</h2>
+          <code id="http-status" class="meta" hidden></code>
+        </div>
+        <div class="panel-content">
+          <pre id="response-body" data-empty>No response yet.</pre>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <script>
+    const form = document.querySelector(".request-form");
+    const fileInput = document.querySelector("#file");
+    const submit = form.querySelector("button");
+    const statusMessage = document.querySelector(".status");
+    const preview = document.querySelector("#preview-image");
+    const previewMessage = document.querySelector("#preview-message");
+    const httpStatus = document.querySelector("#http-status");
+    const responseBody = document.querySelector("#response-body");
+    let previewUrl;
+
+    function setStatus(message, isError = false) {
+      statusMessage.toggleAttribute("data-error", isError);
+      statusMessage.textContent = message;
+    }
+
+    function clearResponse(message) {
+      httpStatus.hidden = true;
+      responseBody.setAttribute("data-empty", "");
+      responseBody.textContent = message;
+    }
+
+    function showPreview() {
+      if (previewUrl) URL.revokeObjectURL(previewUrl);
+      preview.removeAttribute("src");
+      preview.hidden = true;
+      previewMessage.hidden = false;
+
+      const file = fileInput.files[0];
+      submit.disabled = !file;
+      clearResponse("No response yet.");
+      if (!file) {
+        previewMessage.textContent = "Photo preview";
+        setStatus("Choose a photo to get started.");
+        return;
+      }
+      previewMessage.textContent = "Loading preview…";
+      previewUrl = URL.createObjectURL(file);
+      preview.src = previewUrl;
+      setStatus("Photo selected. Send the request to see the response.");
+    }
+
+    preview.addEventListener("load", () => {
+      previewMessage.hidden = true;
+      preview.hidden = false;
+    });
+
+    preview.addEventListener("error", () => {
+      preview.hidden = true;
+      previewMessage.hidden = false;
+      previewMessage.textContent = "This file could not be previewed.";
+    });
+
+    fileInput.addEventListener("change", showPreview);
+    submit.disabled = fileInput.files.length === 0;
+
+    form.addEventListener("submit", async (event) => {
+      event.preventDefault();
+      const data = new FormData(form);
+      submit.disabled = true;
+      fileInput.disabled = true;
+      setStatus("Waiting for the API…");
+      clearResponse("Request in progress…");
+
+      try {
+        const response = await fetch(form.action, { method: "POST", body: data });
+        httpStatus.textContent = `HTTP ${response.status}`;
+        httpStatus.hidden = false;
+
+        const payload = await response.json().catch(() => undefined);
+        if (payload !== undefined) {
+          responseBody.removeAttribute("data-empty");
+          responseBody.textContent = JSON.stringify(payload, null, 2);
+        } else {
+          responseBody.textContent = "The response did not contain JSON.";
+        }
+
+        if (response.status === 501 && payload?.detail === "Complete TODO 1 first.") {
+          setStatus("Complete TODO 1 in app/main.py, then restart the API and try again.", true);
+        } else if (!response.ok) {
+          const detail = typeof payload?.detail === "string" ? payload.detail : "See the response below.";
+          setStatus(`The API returned HTTP ${response.status}. ${detail}`, true);
+        } else if (payload === undefined) {
+          setStatus("The API returned a response without JSON.", true);
+        } else {
+          setStatus("Prediction received.");
+        }
+      } catch {
+        clearResponse("No response received.");
+        setStatus("Could not reach the API. Check that it is running and try again.", true);
+      } finally {
+        fileInput.disabled = false;
+        submit.disabled = false;
+      }
+    });
+  </script>
+</body>
+</html>
